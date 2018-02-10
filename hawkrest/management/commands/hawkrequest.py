@@ -1,5 +1,3 @@
-from optparse import make_option
-
 from django.core.management.base import BaseCommand, CommandError
 
 import logging
@@ -8,19 +6,39 @@ from mohawk import Sender
 from hawkrest import HawkAuthentication
 
 
+DEFAULT_HTTP_METHOD = 'GET'
+
+CMD_OPTIONS = {
+    '--url': {
+        'action': 'store',
+        'type': str,
+        'help': 'Absolute URL to request.'
+    },
+    '--creds': {
+        'action': 'store',
+        'type': str,
+        'help': 'ID for Hawk credentials.'
+    },
+    '-X': {
+        'action': 'store',
+        'type': str,
+        'help': 'Request method. Default: {}.'.format(DEFAULT_HTTP_METHOD),
+        'default': DEFAULT_HTTP_METHOD
+    },
+    '-d': {
+        'action': 'store',
+        'type': str,
+        'help': 'Query string parameters.'
+    }
+}
+
+
 class Command(BaseCommand):
     help = 'Make a Hawk authenticated request'
-    option_list = BaseCommand.option_list + (
-        make_option('--url', action='store', type=str,
-                    help='Absolute URL to request.'),
-        make_option('--creds', action='store', type=str,
-                    help='ID for Hawk credentials.'),
-        make_option('-X', action='store', type=str,
-                    help='Request method. Default: %default.',
-                    default='GET'),
-        make_option('-d', action='store', type=str,
-                    help='Query string parameters'),
-    )
+
+    def add_arguments(self, parser):
+        for opt, config in CMD_OPTIONS.items():
+            parser.add_argument(opt, **config)
 
     def handle(self, *args, **options):
         hawk_log = logging.getLogger('mohawk')
