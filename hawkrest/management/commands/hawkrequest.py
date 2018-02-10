@@ -1,6 +1,4 @@
 from django.core.management.base import BaseCommand, CommandError
-
-import logging
 from mohawk import Sender
 
 from hawkrest import HawkAuthentication
@@ -41,10 +39,6 @@ class Command(BaseCommand):
             parser.add_argument(opt, **config)
 
     def handle(self, *args, **options):
-        hawk_log = logging.getLogger('mohawk')
-        hawk_log.setLevel(logging.DEBUG)
-        hawk_log.addHandler(logging.StreamHandler())
-
         try:
             import requests
         except ImportError:
