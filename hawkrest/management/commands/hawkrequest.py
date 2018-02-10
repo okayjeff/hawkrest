@@ -1,5 +1,6 @@
 from optparse import make_option
 
+import django
 from django.core.management.base import BaseCommand, CommandError
 
 import logging
@@ -8,9 +9,8 @@ from mohawk import Sender
 from hawkrest import HawkAuthentication
 
 
-class Command(BaseCommand):
-    help = 'Make a Hawk authenticated request'
-    option_list = BaseCommand.option_list + (
+def get_args_for_django_v18(command_class):
+    return command_class.option_list + (
         make_option('--url', action='store', type=str,
                     help='Absolute URL to request.'),
         make_option('--creds', action='store', type=str,
@@ -21,6 +21,13 @@ class Command(BaseCommand):
         make_option('-d', action='store', type=str,
                     help='Query string parameters'),
     )
+
+
+class Command(BaseCommand):
+    help = 'Make a Hawk authenticated request'
+
+    if django.VERSION < (1, 9):
+        option_list = get_args_for_django_v18(BaseCommand)
 
     def handle(self, *args, **options):
         hawk_log = logging.getLogger('mohawk')
