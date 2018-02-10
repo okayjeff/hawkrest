@@ -1,15 +1,14 @@
-from optparse import make_option
+import logging
 
 import django
 from django.core.management.base import BaseCommand, CommandError
-
-import logging
 from mohawk import Sender
 
 from hawkrest import HawkAuthentication
 
 
 def get_args_for_django_v18(command_class):
+    from optparse import make_option
     return command_class.option_list + (
         make_option('--url', action='store', type=str,
                     help='Absolute URL to request.'),
