@@ -26,6 +26,7 @@ def get_args_for_django_v18(command_class):
 class Command(BaseCommand):
     help = 'Make a Hawk authenticated request'
 
+    # Maintain compatibility with Django 1.8
     if django.VERSION < (1, 9):
         option_list = get_args_for_django_v18(BaseCommand)
 
