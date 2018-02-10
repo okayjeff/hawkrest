@@ -67,19 +67,19 @@ class Command(BaseCommand):
         do_request = getattr(requests, method.lower())
         res = do_request(url, data=qs, headers=headers)
 
-        print('{method} -d {qs} {url}'.format(method=method.upper(),
-                                              qs=qs or 'None',
-                                              url=url))
-        print(res.text)
+        self.stdout.write('{method} -d {qs} {url}'.format(method=method.upper(),
+                                                          qs=qs or 'None',
+                                                          url=url))
+        self.stdout.write(res.text)
 
         # Verify we're talking to our trusted server.
-        print(res.headers)
+        self.stdout.write(res.headers)
         auth_hdr = res.headers.get('Server-Authorization', None)
         if auth_hdr:
             sender.accept_response(auth_hdr,
                                    content=res.text,
                                    content_type=res.headers['Content-Type'])
-            print('<response was Hawk verified>')
+            self.stdout.write('<response was Hawk verified>')
         else:
-            print('** NO Server-Authorization header **')
-            print('<response was NOT Hawk verified>')
+            self.stdout.write('** NO Server-Authorization header **')
+            self.stdout.write('<response was NOT Hawk verified>')
