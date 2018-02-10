@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 import logging
 from mohawk import Sender
 
-from hawkrest import lookup_credentials
+from hawkrest import HawkAuthentication
 
 
 class Command(BaseCommand):
@@ -41,7 +41,8 @@ class Command(BaseCommand):
                                 if qs else 'text/plain')
         method = options['X']
 
-        credentials = lookup_credentials(options['creds'])
+        creds_key = options['creds']
+        credentials = HawkAuthentication().hawk_credentials_lookup(creds_key)
 
         sender = Sender(credentials,
                         url, method.upper(),
