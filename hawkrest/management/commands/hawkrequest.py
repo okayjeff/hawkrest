@@ -73,7 +73,7 @@ class Command(BaseCommand):
         self.stdout.write(res.text)
 
         # Verify we're talking to our trusted server.
-        self.stdout.write(res.headers)
+        self.stdout.write(str(res.headers))
         auth_hdr = res.headers.get('Server-Authorization', None)
         if auth_hdr:
             sender.accept_response(auth_hdr,
