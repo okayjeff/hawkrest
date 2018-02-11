@@ -3,8 +3,7 @@ import logging
 try:
     from django.utils.deprecation import MiddlewareMixin
     middleware_cls = MiddlewareMixin
-except ImportError:
-    # Django version < 1.11
+except ImportError:  # Django version < 1.11
     middleware_cls = object
 
 
