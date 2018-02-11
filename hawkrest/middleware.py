@@ -15,7 +15,6 @@ class HawkResponseMiddleware(middleware_cls):
 
     def process_response(self, request, response):
         is_hawk_request = False
-        hawk_auth_was_processed = False
         if request.META.get('HTTP_AUTHORIZATION', '').startswith('Hawk'):
             is_hawk_request = True
 
