@@ -1,11 +1,17 @@
 import logging
 
-from django.utils.deprecation import MiddlewareMixin
+try:
+    from django.utils.deprecation import MiddlewareMixin
+    middleware_cls = MiddlewareMixin
+except ImportError:
+    # Django version < 1.11
+    middleware_cls = object
+
 
 log = logging.getLogger(__name__)
 
 
-class HawkResponseMiddleware(MiddlewareMixin):
+class HawkResponseMiddleware(middleware_cls):
 
     def process_response(self, request, response):
         is_hawk_request = False
