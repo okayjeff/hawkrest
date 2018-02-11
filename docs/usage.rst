@@ -20,12 +20,12 @@ Make sure the module is installed as an app:
         'hawkrest',
     )
 
-Make sure the middleware is installed by adding it to your ``MIDDLEWARE``
-(Django >= 1.11) or ``MIDDLEWARE_CLASSES setting``:
+Make sure the middleware is installed by adding it to your project's
+``MIDDLEWARE`` or ``MIDDLEWARE_CLASSES`` (Django version < 1.11) setting:
 
 .. code-block:: python
 
-    MIDDLEWARE_CLASSES = (
+    MIDDLEWARE = (
         ...
         'hawkrest.middleware.HawkResponseMiddleware',
     )
