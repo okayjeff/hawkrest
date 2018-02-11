@@ -48,12 +48,15 @@ class Command(BaseCommand):
         if not url:
             raise CommandError('Specify a URL to load with --url')
 
+        creds_key = options['creds']
+        if not creds_key:
+            raise CommandError('Specify ID for Hawk credentials with --creds')
+
+        method = options['X']
         qs = options['d'] or ''
         request_content_type = ('application/x-www-form-urlencoded'
                                 if qs else 'text/plain')
-        method = options['X']
 
-        creds_key = options['creds']
         credentials = HawkAuthentication().hawk_credentials_lookup(creds_key)
 
         sender = Sender(credentials,
