@@ -31,6 +31,17 @@ CMD_OPTIONS = {
 }
 
 
+def request(url, method, data, headers):
+    import requests
+    do_request = getattr(requests, method.lower())
+    res = do_request(url, data=data, headers=headers)
+    return res
+
+
+def lookup_credentials(creds_key):
+    return HawkAuthentication().hawk_credentials_lookup(creds_key)
+
+
 class Command(BaseCommand):
     help = 'Make a Hawk authenticated request'
 
@@ -39,11 +50,6 @@ class Command(BaseCommand):
             parser.add_argument(opt, **config)
 
     def handle(self, *args, **options):
-        try:
-            import requests
-        except ImportError:
-            raise CommandError('To use this command you first need to '
-                               'install the requests module')
         url = options['url']
         if not url:
             raise CommandError('Specify a URL to load with --url')
@@ -57,7 +63,7 @@ class Command(BaseCommand):
         request_content_type = ('application/x-www-form-urlencoded'
                                 if qs else 'text/plain')
 
-        credentials = HawkAuthentication().hawk_credentials_lookup(creds_key)
+        credentials = lookup_credentials(creds_key)
 
         sender = Sender(credentials,
                         url, method.upper(),
@@ -67,8 +73,11 @@ class Command(BaseCommand):
         headers = {'Authorization': sender.request_header,
                    'Content-Type': request_content_type}
 
-        do_request = getattr(requests, method.lower())
-        res = do_request(url, data=qs, headers=headers)
+        try:
+            res = request(url, method.lower(), data=qs, headers=headers)
+        except ImportError:
+            raise CommandError('To use this command you first need to '
+                               'install the requests module')
 
         self.stdout.write('{method} -d {qs} {url}'.format(method=method.upper(),
                                                           qs=qs or 'None',

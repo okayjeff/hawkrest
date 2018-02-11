@@ -11,24 +11,21 @@ def exec_cmd(**kwargs):
 
 
 class UnauthorizedResponse:
-    """
-    Mock unauthorized response object that omits 'Server-Authorization' key.
-    """
     def __init__(self):
         self.headers = {}
         self.text = 'Unauthorized'
 
 
 class AuthorizedResponse:
-    """
-    Mock authorized response object with 'Server-Authorization' key.
-    """
     def __init__(self):
         self.headers = {
             'Server-Authorization': 'xyz',
             'Content-Type': 'text/plain'
         }
         self.text = 'Authorized'
+
+
+cmd_request = 'hawkrest.management.commands.hawkrequest.request'
 
 
 class TestManagementCommand(BaseTest):
@@ -38,8 +35,10 @@ class TestManagementCommand(BaseTest):
         cls.url = 'http://testserver.com'
         cls.creds = 'script-user'
 
+    @mock.patch(cmd_request, mock.Mock(side_effect=ImportError))
     def test_error_raised_if_requests_not_imported(self):
-        pass
+        with self.assertRaises(CommandError):
+            exec_cmd(url=self.url, creds=self.creds)
 
     def test_error_raised_if_url_not_specified(self):
         with self.assertRaises(CommandError):
@@ -53,13 +52,13 @@ class TestManagementCommand(BaseTest):
         with self.assertRaises(CommandError):
             exec_cmd(creds='nonexistent')
 
-    @mock.patch('requests.get', mock.Mock(return_value=UnauthorizedResponse()))
+    @mock.patch(cmd_request, mock.Mock(return_value=UnauthorizedResponse()))
     @mock.patch('mohawk.Sender.accept_response')
     def test_response_unverified_without_auth_header(self, mock_mohawk):
         exec_cmd(url=self.url, creds=self.creds)
         self.assertFalse(mock_mohawk.called)
 
-    @mock.patch('requests.get', mock.Mock(return_value=AuthorizedResponse()))
+    @mock.patch(cmd_request, mock.Mock(return_value=AuthorizedResponse()))
     @mock.patch('mohawk.Sender.accept_response')
     def test_response_verified_with_auth_header(self, mock_mohawk):
         exec_cmd(url=self.url, creds=self.creds)
