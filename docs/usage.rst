@@ -20,7 +20,8 @@ Make sure the module is installed as an app:
         'hawkrest',
     )
 
-Make sure the middleware is installed:
+Make sure the middleware is installed by adding it to your ``MIDDLEWARE``
+(Django >= 1.11) or ``MIDDLEWARE_CLASSES setting``:
 
 .. code-block:: python
 
