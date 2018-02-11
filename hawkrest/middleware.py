@@ -1,10 +1,9 @@
 import logging
-from django.utils.deprecation import MiddlewareMixin
 
 log = logging.getLogger(__name__)
 
 
-class HawkResponseMiddleware(MiddlewareMixin):
+class HawkResponseMiddleware:
 
     def process_response(self, request, response):
         is_hawk_request = False
