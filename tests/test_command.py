@@ -30,19 +30,14 @@ cmd_request = 'hawkrest.management.commands.hawkrequest.request'
 
 class TestManagementCommand(BaseTest):
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.url = 'http://testserver.com'
-        cls.creds = 'script-user'
-
     @mock.patch(cmd_request, mock.Mock(side_effect=ImportError))
     def test_error_raised_if_requests_not_imported(self):
         with self.assertRaises(CommandError):
-            exec_cmd(url=self.url, creds=self.creds)
+            exec_cmd(url=self.url, creds=self.credentials_id)
 
     def test_error_raised_if_url_not_specified(self):
         with self.assertRaises(CommandError):
-            exec_cmd(creds=self.creds)
+            exec_cmd(creds=self.credentials_id)
 
     def test_error_raised_if_creds_missing(self):
         with self.assertRaises(CommandError):
@@ -55,11 +50,11 @@ class TestManagementCommand(BaseTest):
     @mock.patch(cmd_request, mock.Mock(return_value=UnauthorizedResponse()))
     @mock.patch('mohawk.Sender.accept_response')
     def test_response_unverified_without_auth_header(self, mock_mohawk):
-        exec_cmd(url=self.url, creds=self.creds)
+        exec_cmd(url=self.url, creds=self.credentials_id)
         self.assertFalse(mock_mohawk.called)
 
     @mock.patch(cmd_request, mock.Mock(return_value=AuthorizedResponse()))
     @mock.patch('mohawk.Sender.accept_response')
     def test_response_verified_with_auth_header(self, mock_mohawk):
-        exec_cmd(url=self.url, creds=self.creds)
+        exec_cmd(url=self.url, creds=self.credentials_id)
         self.assertTrue(mock_mohawk.called)
