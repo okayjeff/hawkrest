@@ -2,14 +2,13 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from util import is_hawk_auth_request
+
 
 class HawkResponseMiddleware:
 
     def process_response(self, request, response):
-        is_hawk_request = False
-        hawk_auth_was_processed = False
-        if request.META.get('HTTP_AUTHORIZATION', '').startswith('Hawk'):
-            is_hawk_request = True
+        is_hawk_request = is_hawk_auth_request(request)
 
         hawk_auth_was_processed = 'hawk.receiver' in request.META
         receiver = request.META.get('hawk.receiver', None)
