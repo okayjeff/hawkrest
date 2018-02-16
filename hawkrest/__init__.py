@@ -17,7 +17,7 @@ from mohawk.exc import BadHeaderValue, HawkFail, TokenExpired
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
-from util import get_auth_header, is_hawk_auth_request
+from util import get_auth_header, is_hawk_request
 
 
 log = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ class HawkAuthentication(BaseAuthentication):
         request.META['hawk.receiver'] = None
 
         http_authorization = get_auth_header(request)
-        if not is_hawk_auth_request(request):
+        if not is_hawk_request(request):
             log.debug('ignoring non-Hawk request w/ header: {}'
                       .format(http_authorization))
             return None
