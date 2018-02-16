@@ -1,8 +1,8 @@
 import logging
+from util import is_hawk_request
+
 
 log = logging.getLogger(__name__)
-
-from util import is_hawk_request
 
 
 class HawkResponseMiddleware:
