@@ -70,8 +70,11 @@ class HawkAuthentication(BaseAuthentication):
         request.META['hawk.receiver'] = None
 
         http_authorization = get_auth_header(request)
-        if not is_hawk_request(request):
-            log.debug('ignoring non-Hawk request w/ header: {}'
+        if not http_authorization:
+            log.debug('no authorization header in request')
+            return None
+        elif not is_hawk_request(request):
+            log.debug('ignoring non-Hawk authorization header: {} '
                       .format(http_authorization))
             return None
 
