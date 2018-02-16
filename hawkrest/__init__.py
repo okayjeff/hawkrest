@@ -17,7 +17,7 @@ from mohawk.exc import BadHeaderValue, HawkFail, TokenExpired
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
-from util import get_auth_header, is_hawk_request
+from hawkrest.util import get_auth_header, is_hawk_request
 
 
 log = logging.getLogger(__name__)

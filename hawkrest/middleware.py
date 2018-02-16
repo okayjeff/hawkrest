@@ -1,5 +1,5 @@
 import logging
-from util import is_hawk_request
+from hawkrest.util import is_hawk_request
 
 
 log = logging.getLogger(__name__)
