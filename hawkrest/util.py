@@ -3,5 +3,5 @@ def get_auth_header(request):
 
 
 def is_hawk_request(request):
-    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+    auth_header = get_auth_header(request)
     return auth_header.startswith('Hawk ')
