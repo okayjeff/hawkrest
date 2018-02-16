@@ -1,4 +1,5 @@
 import logging
+
 from hawkrest.util import is_hawk_request
 
 
