@@ -1,7 +1,14 @@
+import logging
+
 from django.core.management.base import BaseCommand, CommandError
 from mohawk import Sender
 
 from hawkrest import HawkAuthentication
+
+
+hawk_log = logging.getLogger('mohawk')
+hawk_log.setLevel(logging.DEBUG)
+hawk_log.addHandler(logging.StreamHandler())
 
 
 DEFAULT_HTTP_METHOD = 'GET'
