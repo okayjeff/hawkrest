@@ -2,6 +2,7 @@ import mock
 
 from django.core.management.base import CommandError
 from django.core.management import call_command
+from requests.models import Response
 
 from tests.base import BaseTest
 
@@ -10,29 +11,11 @@ def exec_cmd(**kwargs):
     call_command('hawkrequest', **kwargs)
 
 
-class UnauthorizedResponse:
-    def __init__(self):
-        self.headers = {}
-        self.text = 'Unauthorized'
-
-
-class AuthorizedResponse:
-    def __init__(self):
-        self.headers = {
-            'Server-Authorization': 'xyz',
-            'Content-Type': 'text/plain'
-        }
-        self.text = 'Authorized'
-
-
-module_import = 'hawkrest.management.commands.hawkrequest.get_requests_module'
-cmd_request = 'hawkrest.management.commands.hawkrequest.request'
-
-
 class TestManagementCommand(BaseTest):
 
-    @mock.patch(module_import, mock.Mock(side_effect=ImportError))
-    def test_error_raised_if_requests_not_imported(self):
+    @mock.patch('hawkrest.management.commands.hawkrequest.get_requests_module')
+    def test_error_raised_if_requests_not_imported(self, mk_import):
+        mk_import.side_effect = ImportError()
         with self.assertRaises(CommandError):
             exec_cmd(url=self.url, creds=self.credentials_id)
 
@@ -48,14 +31,24 @@ class TestManagementCommand(BaseTest):
         with self.assertRaises(CommandError):
             exec_cmd(creds='nonexistent')
 
-    @mock.patch(cmd_request, mock.Mock(return_value=UnauthorizedResponse()))
+    @mock.patch('hawkrest.management.commands.hawkrequest.request')
     @mock.patch('mohawk.Sender.accept_response')
-    def test_response_unverified_without_auth_header(self, mock_mohawk):
+    def test_response_unverified_without_auth_header(self, mk_accept, mk_resp):
+        response = Response()
+        response._content = b'Unauthorized'
+        mk_resp.return_value = Response()
         exec_cmd(url=self.url, creds=self.credentials_id)
-        self.assertFalse(mock_mohawk.called)
+        self.assertFalse(mk_accept.called)
 
-    @mock.patch(cmd_request, mock.Mock(return_value=AuthorizedResponse()))
+    @mock.patch('hawkrest.management.commands.hawkrequest.request')
     @mock.patch('mohawk.Sender.accept_response')
-    def test_response_verified_with_auth_header(self, mock_mohawk):
+    def test_response_verified_with_auth_header(self, mk_accept, mk_resp):
+        response = Response()
+        response.headers = {
+            'Server-Authorization': 'xyz',
+            'Content-Type': 'text/plain'
+        }
+        response._content = b'Authorized'
+        mk_resp.return_value = response
         exec_cmd(url=self.url, creds=self.credentials_id)
-        self.assertTrue(mock_mohawk.called)
+        self.assertTrue(mk_accept.called)
