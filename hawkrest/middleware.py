@@ -1,12 +1,18 @@
 import logging
 
+try:
+    from django.utils.deprecation import MiddlewareMixin
+    middleware_cls = MiddlewareMixin
+except ImportError:  # Django version < 1.11
+    middleware_cls = object
+
 from hawkrest.util import is_hawk_request
 
 
 log = logging.getLogger(__name__)
 
 
-class HawkResponseMiddleware:
+class HawkResponseMiddleware(middleware_cls):
 
     def process_response(self, request, response):
         hawk_auth_was_processed = 'hawk.receiver' in request.META
