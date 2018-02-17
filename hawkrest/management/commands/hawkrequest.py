@@ -38,8 +38,18 @@ CMD_OPTIONS = {
 }
 
 
-def request(url, method, data, headers):
+def get_requests_module():
     import requests
+    return requests
+
+
+def request(url, method, data, headers):
+    try:
+        requests = get_requests_module()
+    except ImportError:
+        raise CommandError('To use this command you first need to '
+                           'install the requests module')
+
     do_request = getattr(requests, method.lower())
     res = do_request(url, data=data, headers=headers)
     return res
@@ -80,11 +90,7 @@ class Command(BaseCommand):
         headers = {'Authorization': sender.request_header,
                    'Content-Type': request_content_type}
 
-        try:
-            res = request(url, method.lower(), data=qs, headers=headers)
-        except ImportError:
-            raise CommandError('To use this command you first need to '
-                               'install the requests module')
+        res = request(url, method.lower(), data=qs, headers=headers)
 
         self.stdout.write('{method} -d {qs} {url}'.format(method=method.upper(),
                                                           qs=qs or 'None',

@@ -25,12 +25,13 @@ class AuthorizedResponse:
         self.text = 'Authorized'
 
 
+module_import = 'hawkrest.management.commands.hawkrequest.get_requests_module'
 cmd_request = 'hawkrest.management.commands.hawkrequest.request'
 
 
 class TestManagementCommand(BaseTest):
 
-    @mock.patch(cmd_request, mock.Mock(side_effect=ImportError))
+    @mock.patch(module_import, mock.Mock(side_effect=ImportError))
     def test_error_raised_if_requests_not_imported(self):
         with self.assertRaises(CommandError):
             exec_cmd(url=self.url, creds=self.credentials_id)
