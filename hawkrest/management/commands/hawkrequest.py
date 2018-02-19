@@ -6,11 +6,6 @@ from mohawk import Sender
 from hawkrest import HawkAuthentication
 
 
-hawk_log = logging.getLogger('mohawk')
-hawk_log.setLevel(logging.DEBUG)
-hawk_log.addHandler(logging.StreamHandler())
-
-
 DEFAULT_HTTP_METHOD = 'GET'
 
 CMD_OPTIONS = {
@@ -67,6 +62,12 @@ class Command(BaseCommand):
             parser.add_argument(opt, **config)
 
     def handle(self, *args, **options):
+        # Configure the mohawk lib for debug logging so we can see inputs to
+        # the signature functions and other useful stuff.
+        hawk_log = logging.getLogger('mohawk')
+        hawk_log.setLevel(logging.DEBUG)
+        hawk_log.addHandler(logging.StreamHandler())
+
         url = options['url']
         if not url:
             raise CommandError('Specify a URL to load with --url')

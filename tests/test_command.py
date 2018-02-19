@@ -44,10 +44,8 @@ class TestManagementCommand(BaseTest):
     @mock.patch('mohawk.Sender.accept_response')
     def test_response_verified_with_auth_header(self, mk_accept, mk_resp):
         response = Response()
-        response.headers = {
-            'Server-Authorization': 'xyz',
-            'Content-Type': 'text/plain'
-        }
+        response.headers['Server-Authorization'] = 'xyz'
+        response.headers['Content-Type'] = 'text/plain'
         response._content = b'Authorized'
         mk_resp.return_value = response
         exec_cmd(url=self.url, creds=self.credentials_id)
